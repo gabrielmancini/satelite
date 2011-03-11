@@ -1,5 +1,21 @@
 package com.abril.traker.satelite;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.List;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.BasicResponseHandler;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpParams;
+
 import android.app.Activity;
 import android.content.Context;
 import android.location.Criteria;
@@ -62,10 +78,7 @@ public class Satelite extends Activity implements LocationListener {
 
 	@Override
 	public void onLocationChanged(Location location) {
-		int lat = (int) (location.getLatitude());
-		int lng = (int) (location.getLongitude());
-		latituteField.setText(String.valueOf(lat));
-		longitudeField.setText(String.valueOf(lng));
+		sendLocation(location);
 	}
 
 	@Override
@@ -86,7 +99,59 @@ public class Satelite extends Activity implements LocationListener {
 		Toast.makeText(this, "Disenabled provider " + provider,
 				Toast.LENGTH_SHORT).show();
 	}
-	 
+	
+	private void sendLocation(Location location) {
+		double lat = (location.getLatitude());
+		double lng = (location.getLongitude());
+		
+		//Started POST "/locals" for 127.0.0.1 at 2011-03-11 00:51:08 -0300
+		//  Processing by LocalsController#create as HTML
+		//  Parameters: {"utf8"=>"✓", "authenticity_token"=>"I2sSV7wL5DsWUW7+mjnZgG4J7/lhJ6Jov9bHVbae7d0=", "local"=>{"satelite_id"=>"1", "latitude"=>"13.9393", "longitude"=>"-42.9999"}, "commit"=>"Create Local"}
+		
+		// sendLocation to "local"=>{"satelite_id"=>"1", "latitude"=>"13.9393", "longitude"=>"-42.9999"}
+		URI url=null;
+		try {
+			url = new URI("http://www.greenlizard.com.br/locals");
+		} catch (URISyntaxException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		HttpParams params = new BasicHttpParams();
+		HttpClient client = new DefaultHttpClient(params);
+		HttpPost post = new HttpPost(url);
+		String endResult = null;
+
+		List<? extends NameValuePair> myList = null;
+		//myList.add(new NameValuePair())
+		try 
+		{
+		post.setEntity(new UrlEncodedFormEntity(myList));
+		} 
+		catch (UnsupportedEncodingException e) 
+		{
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+		} 
+
+		try 
+		{
+		String response = client.execute(post, new BasicResponseHandler());
+		endResult = response;
+		} 
+		catch (ClientProtocolException e) 
+		{
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+		} 
+		catch (IOException e) 
+		{
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+		}  		
+		
+		latituteField.setText(String.valueOf(lat));
+		longitudeField.setText(String.valueOf(lng));
+	}
 	 
 	 	 
 }
