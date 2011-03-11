@@ -17,6 +17,10 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONStringer;
+import org.json.JSONTokener;
 
 import android.app.Activity;
 import android.content.Context;
@@ -25,6 +29,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.webkit.JsResult;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -122,47 +127,40 @@ public class Satelite extends Activity implements LocationListener {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}
-		HttpParams params = new BasicHttpParams();
-		params.setParameter("satelite_id", 1);
-		params.setDoubleParameter("latitude", lat);
-		params.setDoubleParameter("longitude", lng);
-		HttpClient client = new DefaultHttpClient(params);
-		HttpPost post = new HttpPost(url);
 		
-		List<NameValuePair> pairs = new ArrayList<NameValuePair>(); 
-		pairs.add(new BasicNameValuePair("satelite_id", "1")); 
-		pairs.add(new BasicNameValuePair("latitude", Double.toString(lat))); 
-		pairs.add(new BasicNameValuePair("longitude", Double.toString(lng))); 
+		StringBuilder ret = null;
+		try {
+			ret = RestfullClient.connect("http://www.greenlizard.com.br/locals/new.json");
+		} catch (ClientProtocolException e) { 
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		JSONObject json = null;
+		try {
+			json = new JSONObject(ret.toString());
+			json.getJSONObject("local").put("satelite_id", 1);
+			json.getJSONObject("local").put("longitude", lat);
+			json.getJSONObject("local").put("longitude", lng);
+			
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
-		try 
-		{
-		post.setEntity(new UrlEncodedFormEntity(pairs));
-		} 
-		catch (UnsupportedEncodingException e) 
-		{
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-		} 
+		try {
+			RestfullClient.sendData(url, json);
+		} catch (ClientProtocolException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
-		String endResult = null;
-
-		try 
-		{
-		String response = client.execute(post, new BasicResponseHandler());
-		endResult = response;
-		} 
-		catch (ClientProtocolException e) 
-		{
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-		} 
-		catch (IOException e) 
-		{
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-		}  		
-		
-		Toast.makeText(this, endResult, Toast.LENGTH_SHORT).show();
+		Toast.makeText(this, "update sucess", Toast.LENGTH_SHORT).show();
 
 	}
 	 
