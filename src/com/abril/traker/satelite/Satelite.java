@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.http.NameValuePair;
@@ -13,6 +14,7 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
 
@@ -78,6 +80,10 @@ public class Satelite extends Activity implements LocationListener {
 
 	@Override
 	public void onLocationChanged(Location location) {
+		double lat = (location.getLatitude());
+		double lng = (location.getLongitude());
+		latituteField.setText(String.valueOf(lat));
+		longitudeField.setText(String.valueOf(lng));
 		sendLocation(location);
 	}
 
@@ -117,21 +123,28 @@ public class Satelite extends Activity implements LocationListener {
 			e1.printStackTrace();
 		}
 		HttpParams params = new BasicHttpParams();
+		params.setParameter("satelite_id", 1);
+		params.setDoubleParameter("latitude", lat);
+		params.setDoubleParameter("longitude", lng);
 		HttpClient client = new DefaultHttpClient(params);
 		HttpPost post = new HttpPost(url);
-		String endResult = null;
-
-		List<? extends NameValuePair> myList = null;
-		//myList.add(new NameValuePair())
+		
+		List<NameValuePair> pairs = new ArrayList<NameValuePair>(); 
+		pairs.add(new BasicNameValuePair("satelite_id", "1")); 
+		pairs.add(new BasicNameValuePair("latitude", Double.toString(lat))); 
+		pairs.add(new BasicNameValuePair("longitude", Double.toString(lng))); 
+		
 		try 
 		{
-		post.setEntity(new UrlEncodedFormEntity(myList));
+		post.setEntity(new UrlEncodedFormEntity(pairs));
 		} 
 		catch (UnsupportedEncodingException e) 
 		{
 		// TODO Auto-generated catch block
 		e.printStackTrace();
 		} 
+		
+		String endResult = null;
 
 		try 
 		{
@@ -149,8 +162,8 @@ public class Satelite extends Activity implements LocationListener {
 		e.printStackTrace();
 		}  		
 		
-		latituteField.setText(String.valueOf(lat));
-		longitudeField.setText(String.valueOf(lng));
+		Toast.makeText(this, endResult, Toast.LENGTH_SHORT).show();
+
 	}
 	 
 	 	 
