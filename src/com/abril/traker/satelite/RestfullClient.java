@@ -11,6 +11,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -80,15 +81,15 @@ public class RestfullClient {
     public  static void sendData(String url,JSONObject data)throws IOException,ClientProtocolException{
  
         HttpClient httpclient = new DefaultHttpClient();
-        HttpPut httpPut = new HttpPut(url);
+        HttpPost httpPost = new HttpPost(url);
  
         HttpResponse response;
  
         try {
  
             HttpEntity entity = new StringEntity(data.toString());
-            httpPut.setEntity(entity);
-            response = httpclient.execute(httpPut);
+            httpPost.setEntity(entity);
+            response = httpclient.execute(httpPost);
             HttpEntity input = response.getEntity();
             if (input != null) {
                 // A Simple JSON Response Read

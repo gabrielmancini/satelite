@@ -115,19 +115,6 @@ public class Satelite extends Activity implements LocationListener {
 		double lat = (location.getLatitude());
 		double lng = (location.getLongitude());
 		
-		//Started POST "/locals" for 127.0.0.1 at 2011-03-11 00:51:08 -0300
-		//  Processing by LocalsController#create as HTML
-		//  Parameters: {"utf8"=>"✓", "authenticity_token"=>"I2sSV7wL5DsWUW7+mjnZgG4J7/lhJ6Jov9bHVbae7d0=", "local"=>{"satelite_id"=>"1", "latitude"=>"13.9393", "longitude"=>"-42.9999"}, "commit"=>"Create Local"}
-		
-		// sendLocation to "local"=>{"satelite_id"=>"1", "latitude"=>"13.9393", "longitude"=>"-42.9999"}
-		URI url=null;
-		try {
-			url = new URI("http://www.greenlizard.com.br/locals");
-		} catch (URISyntaxException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		
 		StringBuilder ret = null;
 		try {
 			ret = RestfullClient.connect("http://www.greenlizard.com.br/locals/new.json");
@@ -141,9 +128,9 @@ public class Satelite extends Activity implements LocationListener {
 		JSONObject json = null;
 		try {
 			json = new JSONObject(ret.toString());
-			json.getJSONObject("local").put("satelite_id", 1);
-			json.getJSONObject("local").put("longitude", lat);
-			json.getJSONObject("local").put("longitude", lng);
+			json.getJSONObject("local").put("satelite_id", "1");
+			json.getJSONObject("local").put("latitude", String.valueOf(lat));
+			json.getJSONObject("local").put("longitude", String.valueOf(lng));
 			
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
@@ -151,7 +138,7 @@ public class Satelite extends Activity implements LocationListener {
 		}
 		
 		try {
-			RestfullClient.sendData(url, json);
+			RestfullClient.sendData("http://www.greenlizard.com.br/locals", json);
 		} catch (ClientProtocolException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
