@@ -15,6 +15,8 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicHeader;
+import org.apache.http.protocol.HTTP;
 import org.json.JSONObject;
 
 public class RestfullClient {
@@ -82,13 +84,17 @@ public class RestfullClient {
  
         HttpClient httpclient = new DefaultHttpClient();
         HttpPost httpPost = new HttpPost(url);
- 
+        httpPost.addHeader("Content-type","application/json");
+        
         HttpResponse response;
  
         try {
  
-            HttpEntity entity = new StringEntity(data.toString());
+        	StringEntity entity = new StringEntity(data.toString());            
+            entity.setContentType("application/json;charset=UTF-8");//text/plain;charset=UTF-8
+            entity.setContentEncoding(new BasicHeader(HTTP.CONTENT_TYPE,"application/json;charset=UTF-8"));
             httpPost.setEntity(entity);
+            
             response = httpclient.execute(httpPost);
             HttpEntity input = response.getEntity();
             if (input != null) {
